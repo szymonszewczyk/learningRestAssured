@@ -1,15 +1,16 @@
 package joecolantonio;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
+//import io.restassured.RestAssured;
+//import io.restassured.http.ContentType;
+//import io.restassured.response.Response;
+//import io.restassured.specification.RequestSpecification;
+import static com.jayway.restassured.RestAssured.*;
+
+import com.jayway.restassured.RestAssured;
 import org.json.simple.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Calendar;
-
-import static io.restassured.RestAssured.*;
+//import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 
@@ -20,8 +21,6 @@ public class PostDeletePutINGherkinGivenWhenThen {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
         RestAssured.baseURI = "http://localhost:3000/posts";
 
-//        given()
-//                .queryParam("ID",1)
         when()
                 .get()
                 .then()
@@ -34,15 +33,12 @@ public class PostDeletePutINGherkinGivenWhenThen {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
         RestAssured.baseURI = "http://localhost:3000/posts";
 
-//        given()
-//                .queryParam("ID",1)
         when()
                 .get("1")
         .then()
                 .body("title", equalTo("json-server"))
                 .log().all();
     }
-
 
     @Test
     public void postTest()
@@ -58,8 +54,8 @@ public class PostDeletePutINGherkinGivenWhenThen {
         jsonX.put("author","Lear Automation");
 
             given()
-                .contentType("application/json")
-                .body(jsonX.toJSONString())
+                    .contentType("application/json")
+                    .body(jsonX.toJSONString())
             .when()
                     .post()
             .then()
@@ -69,20 +65,43 @@ public class PostDeletePutINGherkinGivenWhenThen {
                     .log().all();
     }
 
+    // The HTTP methods PATCH can be used to update partial resources. For instance, when you only need to update one
+    // field of the resource, PUTting a complete resource representation might be cumbersome and utilizes more bandwidth
+    @Test
+    public void patchTest()
+    {
+        long ts = System.currentTimeMillis();
+
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+        RestAssured.baseURI = "http://localhost:3000/posts";
+
+        JSONObject jsonX = new JSONObject();
+        jsonX.put("author","Lear Automation");
+
+                given()
+                    .contentType("application/json")
+                    .body(jsonX.toJSONString())
+                .when()
+                    .patch("1")
+                .then()
+                    .assertThat()
+                    .statusCode(equalTo(200))
+                    .body("author", equalTo("Lear Automation"))
+                    .log().all();
+    }
+
     @Test
     public void putUpdateTest()
     {
-
-//
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
         baseURI= "http://localhost:3000/posts/";
 
-                JSONObject jsonX = new JSONObject();
+        JSONObject jsonX = new JSONObject();
         jsonX.put("id","1566043880193");
         jsonX.put("title","tt updated by PUT");
         jsonX.put("author","aa updated by PUT");
 
-        given()
+            given()
                 .header("Content-Type", "application/json")
                 .body(jsonX.toJSONString())
             .when()
@@ -93,26 +112,6 @@ public class PostDeletePutINGherkinGivenWhenThen {
                 .body("title", equalTo("tt updated by PUT"))
                 .body("author",equalTo("aa updated by PUT"))
                 .log().all();
-
-
-        //        OLD
-//        RequestSpecification request = given();
-//        request.header("Content-Type", "application/json");
-//
-//        JSONObject jsonX = new JSONObject();
-//        jsonX.put("id","25");
-//        jsonX.put("title","Selenium WebDriver");
-//        jsonX.put("author","Adam M");
-//
-//        request.body(jsonX.toJSONString());
-//        Response response = request.put(
-//                "http://localhost:3000/posts/25");
-//        int code = response.getStatusCode();
-//        Assert.assertEquals(code,200);
-//        System.out.println("Response code "+code);
-
-
-
     }
 
     @Test
@@ -122,19 +121,25 @@ public class PostDeletePutINGherkinGivenWhenThen {
         baseURI = "http://localhost:3000/posts";
 
         when()
+            .delete("26")
+        .then()
+            .assertThat()
+            .statusCode(200)
+            .log().all();
+    }
+
+    @Test
+    public void profileTest()
+    {
+        enableLoggingOfRequestAndResponseIfValidationFails();
+        baseURI = "http://localhost:3000/profile";
+
+        when()
                 .delete("26")
-            .then()
+                .then()
                 .assertThat()
-                    .statusCode(200)
+                .statusCode(200)
                 .log().all();
-
-
-//        OLD
-//        RequestSpecification request = given();
-//        Response response = request.delete(
-//                "http://localhost:3000/posts/25");
-//        int code = response.getStatusCode();
-//        Assert.assertEquals(code,200);
     }
 
 }
